@@ -64,31 +64,32 @@ def keggx(ec, savedir=None):
     ## get sequences
     # track done
     # to csv
-    pd.DataFrame([],columns = ['species','gene','sequence', 'structure']).to_csv(out_csv, index=False)
-    todo = [[i,j] for i in d['genes'].keys() for j in d['genes'][i]]
+    if d['genes'] is not None:
+        pd.DataFrame([],columns = ['species','gene','sequence', 'structure']).to_csv(out_csv, index=False)
+        todo = [[i,j] for i in d['genes'].keys() for j in d['genes'][i]]
 
-    def done():
-        df = pd.read_csv(out_csv, columns=['species','gene','sequence', 'structure'])
-        return [[i,j] for i, j  in zip(df['species'], df['gene'])]
+        def done():
+            df = pd.read_csv(out_csv, columns=['species','gene','sequence', 'structure'])
+            return [[i,j] for i, j  in zip(df['species'], df['gene'])]
 
-    # split into new fn
-    def extract(species,gene):
-        gene_data = get_gene(species, gene)
-        if isinstance(gene_data, dict):
-            aaseq = re.findall('[A-Z]+', ''.join(gene_data['AASEQ']))[0]
-            if 'STRUCTURE' in gene_data.keys():
-                struc = ','.join(re.findall('PDB:(.+)', ''.join(gene_data['STRUCTURE']))[0].split())
-            else:
-                struc = None
-            data = pd.DataFrame([[species, gene, aaseq, struc]], 
-                columns=['species','gene','sequence', 'structure'])
-            return data
+        # split into new fn
+        def extract(species,gene):
+            gene_data = get_gene(species, gene)
+            if isinstance(gene_data, dict):
+                aaseq = re.findall('[A-Z]+', ''.join(gene_data['AASEQ']))[0]
+                if 'STRUCTURE' in gene_data.keys():
+                    struc = ','.join(re.findall('PDB:(.+)', ''.join(gene_data['STRUCTURE']))[0].split())
+                else:
+                    struc = None
+                data = pd.DataFrame([[species, gene, aaseq, struc]], 
+                    columns=['species','gene','sequence', 'structure'])
+                return data
 
-    for i in tqdm(todo):
-        data = extract(*i)
-        if data is not None:
-            data.to_csv(out_csv, mode = 'a', header=None, index=False)
-            todo.remove(i)
+        for i in tqdm(todo):
+            data = extract(*i)
+            if data is not None:
+                data.to_csv(out_csv, mode = 'a', header=None, index=False)
+                todo.remove(i)
 
 
 def get_gene(species, geneid):
