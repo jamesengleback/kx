@@ -39,9 +39,18 @@ def keggx(ec, savedir=None):
     # get those gene numbers & chems
     if not os.path.exists(ecjson):
         kegg_ex = get_ec(ec)
-        substrates = re.findall('CPD:(C\d+)',''.join(kegg_ex['SUBSTRATE'])) # i know :/
-        products = re.findall('CPD:(C\d+)',''.join(kegg_ex['PRODUCT']))
-        genes = {re.findall('([A-Z]+):',i)[0]:re.findall('(\S+)',i.split(':')[1]) for i in kegg_ex['GENES']}
+        if 'SUBSTRATE' in kegg_ex.keys():
+            substrates = re.findall('CPD:(C\d+)',''.join(kegg_ex['SUBSTRATE'])) # i know :/
+        else:
+            substrates = None
+        if 'PRODUCT' in kegg_ex.keys():
+            products = re.findall('CPD:(C\d+)',''.join(kegg_ex['PRODUCT']))
+        else:
+            products = None
+        if 'GENES' in kegg_ex.keys():
+            genes = {re.findall('([A-Z]+):',i)[0]:re.findall('(\S+)',i.split(':')[1]) for i in kegg_ex['GENES']}
+        else:
+            genes = None
         d = {'ec':ec,
              'substrates':substrates,
              'products':products,
