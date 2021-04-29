@@ -19,6 +19,12 @@ from kx.ec_numbers import ec_numbers
 # restart / wait / daemon
 
 def kx(ec, savedir=None):
+    targets = [re.match(ec,i) for i in ec_numbers]
+    for i in targets:
+        print(f'target = {i}')
+        keggx(i, savedir = savedir)
+
+def keggx(ec, savedir=None):
     assert ec in ec_numbers # todo - grep
 
     # file setup
