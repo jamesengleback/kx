@@ -20,6 +20,7 @@ from kx.ec_numbers import ec_numbers
 
 def kx(ec, savedir=None):
     targets = [re.match(ec,i) for i in ec_numbers]
+    targets = [i.string for i in targets if i is not None]
     for i in targets:
         print(f'target = {i}')
         keggx(i, savedir = savedir)
